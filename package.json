@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "author": "abhinav",
-  "scripts":{
-    "serve":"nodemon server.js",
-    "dev":"nodemon server.js"
+  "scripts": {
+    "serve": "nodemon server.js",
+    "dev": "nodemon server.js"
   },
   "license": "MIT",
   "dependencies": {
@@ -14,6 +14,10 @@
     "express-ejs-layouts": "^2.5.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.15"
+    "laravel-mix": "^6.0.41",
+    "nodemon": "^2.0.15",
+    "resolve-url-loader": "5.0.0",
+    "sass": "^1.49.0",
+    "sass-loader": "12.1.0"
   }
 }

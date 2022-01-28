@@ -6,6 +6,9 @@ const path = require('path');
 
 const PORT = process.env.PORT || 9000;
 
+//Assets : ye btata ki css and js kaha se uthani h...
+app.use(express.static('public'));
+
 app.get('/',(req,res) => {
     //res.send('Hellosss');
     res.render('home')
