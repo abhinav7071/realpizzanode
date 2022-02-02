@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Noty from 'noty';
+import { initAdmin } from './admin'
 
 let addToCart = document.querySelectorAll('.add-to-cart'); //sare add to cart k button array me a jyenge
 let cartCounter = document.querySelector('#cartCounter'); 
@@ -33,3 +34,15 @@ function updateCart(pizza){
         }).show();
     });
 }
+
+//Remove alert messafe on X seconds
+const alertMsg = document.querySelector('#success-alert'); 
+if(alertMsg){
+    setTimeout(() => {
+        alertMsg.remove()
+    },2000)
+}
+
+
+//Call Admin js file
+initAdmin();
