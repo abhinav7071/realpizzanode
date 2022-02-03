@@ -10,12 +10,13 @@ const PORT = process.env.PORT || 9000;
 const flash = require('express-flash');
 const passport = require('passport');
 const MongoDbStore = require('connect-mongo')(session);
+const Emitter = require('events');
 
 
 
 //Database connection
 try{
-    const url = 'mongodb://localhost/pizza';
+    const url = process.env.MONGO_CONNECTION_URL;
     const conn =  mongoose.connect(url,{
         useNewUrlParser: true,
         useUnifiedTopology:true
@@ -36,6 +37,12 @@ let mongoStore = new MongoDbStore({
         mongooseConnection : mongoose.connection,
         collection : 'sessions'
 })
+
+//Event emmitter
+
+const eventEmitter = new Emitter();
+app.set('eventEmitter',eventEmitter);//is se puri application me kahin pe bhi eventEmiiter acces kr payenge, eventEmitter app se bind kiya
+
 
 
 //Session config
@@ -74,9 +81,37 @@ app.set('views',path.join(__dirname,'/resources/views'));
 app.set('view engine','ejs');
 
 require('./routes/web')(app);//calling routes file web.js aur usme sare routes define krenge, app ka instance pass kiya
+//for 404 page
+app.use((req,res) => {
+    res.status(404).render('errors/404')
+})
 
 
 
-app.listen(PORT,() => {
+const server = app.listen(PORT,() => {
     console.log(`Listening on the port ${PORT}`)
+})
+
+//Socket
+
+const io = require('socket.io')(server);
+io.on('connection',(socket) => {
+    //console.log(socket.id);
+    //ayah app.js se jo join methoda bheja vo recieve kiye.aur next ek callback me vo order id pass kra di aur ek room create krke usme joi kara denge socket.join() socket k join k methhod se
+
+    socket.on('join',(orderId) => {
+        console.log(orderId);
+        socket.join(orderId)
+    })
+})
+
+eventEmitter.on('orderUpdated',(data) => {
+    io.to(`order_${data.id}`).emit('orderUpdated',data);//yaha pe room h uske andar msg ko emit krna h..,abhi msg kr rhe socket k updar ..on se socket pe..aur to se socket k andar k room pe emit kr rhe msg
+
+})
+
+//order place emitter
+eventEmitter.on('orderPlaced',(data) => {
+    io.to(`adminRoom`).emit('orderPlaced',data);//yaha pe room h uske andar msg ko emit krna h..,abhi msg kr rhe socket k updar ..on se socket pe..aur to se socket k andar k room pe emit kr rhe msg
+
 })
